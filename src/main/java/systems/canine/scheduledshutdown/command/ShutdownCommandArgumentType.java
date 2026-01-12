@@ -1,6 +1,5 @@
 package systems.canine.scheduledshutdown.command;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -15,8 +14,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
-
-import net.minecraft.commands.arguments.UuidArgument;
 
 public class ShutdownCommandArgumentType implements ArgumentType<ShutdownSubcommand> {
 	public static final DynamicCommandExceptionType ERROR_INVALID = new DynamicCommandExceptionType(
