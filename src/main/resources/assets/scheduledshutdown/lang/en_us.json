@@ -1,0 +1,13 @@
+{
+  "itemGroup.scheduledshutdown": "Example Mod Tab",
+  "block.scheduledshutdown.example_block": "Example Block",
+  "item.scheduledshutdown.example_item": "Example Item",
+
+  "scheduledshutdown.configuration.title": "Scheduled Shutdown Configs",
+  "scheduledshutdown.configuration.section.scheduledshutdown.common.toml": "Scheduled Shutdown Configs",
+  "scheduledshutdown.configuration.section.scheduledshutdown.common.toml.title": "Scheduled Shutdown Configs",
+  "scheduledshutdown.configuration.items": "Item List",
+  "scheduledshutdown.configuration.logDirtBlock": "Log Dirt Block",
+  "scheduledshutdown.configuration.magicNumberIntroduction": "Magic Number Text",
+  "scheduledshutdown.configuration.magicNumber": "Magic Number"
+}
