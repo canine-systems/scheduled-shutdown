@@ -3,7 +3,6 @@ package systems.canine.scheduledshutdown.command;
 import java.util.function.Supplier;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -45,7 +44,7 @@ public class ShutdownCommand {
 	
 	private static void registerCommands(RegisterCommandsEvent event) {
 		CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
-		LiteralCommandNode<CommandSourceStack> mainNode = dispatcher.register(
+		dispatcher.register(
 			Commands.literal("shutdown")
 				.requires(cs -> cs.hasPermission(OP_LEVEL))
 				.executes(context -> initiateShutdown(context.getSource()))
