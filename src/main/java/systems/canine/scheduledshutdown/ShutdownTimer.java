@@ -47,9 +47,9 @@ public class ShutdownTimer {
         return endTime - System.nanoTime();
     }
 
-    public void restart(int minutes) {
+    public void restart(int seconds) {
         startTime = System.nanoTime();
-        endTime = startTime + (minutes * NANOS_PER_MIN);
+        endTime = startTime + (seconds * NANOS_PER_SEC);
         secsPerSegment = (endTime - startTime) / NANOS_PER_SEC / NUM_SEGMENTS;
         segmentsLeft = Long.MAX_VALUE;
         state = State.WAITING;
@@ -100,7 +100,14 @@ public class ShutdownTimer {
         if (secsLeft < 60) {
             time = String.format("%d seconds", secsLeft);
         } else {
-            time = String.format("%d minutes", secsLeft / 60);
+            long mins = secsLeft / 60;
+            long secs = secsLeft % 60;
+
+            if (secs == 0) {
+                time = String.format("%d minutes", mins);
+            } else {
+                time = String.format("%d minutes and %d seconds", mins, secs);
+            }
         }
 
         MutableComponent msg = Component.literal("Server is shutting down in ")

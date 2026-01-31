@@ -33,8 +33,8 @@ public class ShutdownCommand {
             () -> ArgumentTypeInfos.registerByClass(ShutdownCommandArgumentType.class,
                 SingletonArgumentInfo.contextFree(ShutdownCommandArgumentType::newInstance)));
 
-    private static final int DEFAULT_DURATION = 10;
-    private static final int QUICK_DURATION = 1;
+    private static final int DEFAULT_DURATION = 10 * 60;
+    private static final int QUICK_DURATION = 100;
 
     // Don't ever construct this directly
     private ShutdownCommand() {
