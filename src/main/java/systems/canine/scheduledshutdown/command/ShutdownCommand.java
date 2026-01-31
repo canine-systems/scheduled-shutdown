@@ -59,7 +59,7 @@ public class ShutdownCommand {
     }
 
     private static int initiateShutdown(CommandSourceStack source) {
-        source.sendSuccess(() -> Component.literal("got /shutdown (no subcommand)"), false);
+        source.sendSuccess(() -> Component.literal("Started shutdown timer."), false);
         ShutdownTimer.getInstance().restart(DEFAULT_DURATION);
         return 0;
     }
@@ -68,11 +68,11 @@ public class ShutdownCommand {
         switch (cmd) {
         case ShutdownSubcommand.QUICK:
             ShutdownTimer.getInstance().restart(QUICK_DURATION);
-            source.sendSuccess(() -> Component.literal("got /shutdown quick"), false);
+            source.sendSuccess(() -> Component.literal("Started short shutdown timer."), false);
             break;
         case ShutdownSubcommand.CANCEL:
             ShutdownTimer.getInstance().cancel();
-            source.sendSuccess(() -> Component.literal("got /shutdown cancel"), false);
+            source.sendSuccess(() -> Component.literal("Stopped oustanding shutdown timer, if there is one."), false);
             break;
         }
 
