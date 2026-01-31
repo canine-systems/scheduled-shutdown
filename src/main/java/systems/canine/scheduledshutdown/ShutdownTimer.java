@@ -95,17 +95,17 @@ public class ShutdownTimer {
     }
 
     private void announceShutdown(PlayerList playerList, long secsLeft) {
-        MutableComponent msg;
+        String time;
 
         if (secsLeft < 60) {
-            msg = Component.literal("Server is shutting down in ")
-                .append(Component.literal(String.format("%d seconds", secsLeft)).withStyle(ChatFormatting.RED))
-                .append(Component.literal("!").withStyle(ChatFormatting.RESET));
+            time = String.format("%d seconds", secsLeft);
         } else {
-            msg = Component.literal("Server is shutting down in ")
-                .append(Component.literal(String.format("%d minutes", secsLeft / 60)).withStyle(ChatFormatting.RED))
-                .append(Component.literal("!").withStyle(ChatFormatting.RESET));
+            time = String.format("%d minutes", secsLeft / 60);
         }
+
+        MutableComponent msg = Component.literal("Server is shutting down in ")
+            .append(Component.literal(time).withStyle(ChatFormatting.RED))
+            .append(Component.literal("!").withStyle(ChatFormatting.RESET));
         playerList.broadcastSystemMessage(msg, true);
     }
 
