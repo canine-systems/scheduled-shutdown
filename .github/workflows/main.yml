@@ -7,6 +7,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'
     steps:
       - uses: actions/checkout@v5
         with:
@@ -39,6 +40,8 @@ jobs:
       - run: ./gradlew -Pversion=${{ steps.info.outputs.version }} build
       - run: ./gradlew -Pversion=${{ steps.info.outputs.version }} test
       - run: gh release create --title "Build ${{ steps.info.outputs.version }}" ${{ steps.info.outputs.version }} build/libs/scheduledshutdown-${{ steps.info.outputs.version }}.jar
+        env:
+          GH_TOKEN: ${{ github.token }}
       - uses: cloudnode-pro/modrinth-publish@v2
         with:
           token: ${{ secrets.MODRINTH_TOKEN }}
