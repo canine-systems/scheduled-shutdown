@@ -19,15 +19,19 @@ public class ScheduledShutdown {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public ScheduledShutdown(IEventBus modEventBus, ModContainer modContainer) {
+        ShutdownCommand.initCommon();
+
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            LOGGER.info("Not doing anything -- ScheduledShutdown is running on the client");
+            LOGGER.info("hi from Scheduled Shutdown (client)");
             return;
+        } else {
+            LOGGER.info("hi from Scheduled Shutdown (server)");
         }
 
         NeoForge.EVENT_BUS.register(ShutdownTimer.getInstance());
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
-        ShutdownCommand.init(modEventBus);
+        ShutdownCommand.initServer(modEventBus);
     }
 }

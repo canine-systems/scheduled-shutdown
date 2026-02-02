@@ -44,10 +44,12 @@ public class ShutdownCommand {
     private ShutdownCommand() {
     }
 
-    public static void init(IEventBus modBus) {
-        COMMAND_ARGUMENT_TYPES.register(modBus);
-
+    public static void initCommon() {
         NeoForge.EVENT_BUS.addListener(ShutdownCommand::registerCommands);
+    }
+
+    public static void initServer(IEventBus modBus) {
+        COMMAND_ARGUMENT_TYPES.register(modBus);
     }
 
     private static void registerCommands(RegisterCommandsEvent event) {
