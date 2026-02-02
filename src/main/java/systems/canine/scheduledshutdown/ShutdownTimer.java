@@ -102,11 +102,12 @@ public class ShutdownTimer {
         } else {
             long mins = secsLeft / 60;
             long secs = secsLeft % 60;
+            String minute_s = (mins == 1) ? "" : "s";
 
             if (secs == 0) {
-                time = String.format("%d minutes", mins);
+                time = String.format("%d minute%s", mins, minute_s);
             } else {
-                time = String.format("%d minutes and %d seconds", mins, secs);
+                time = String.format("%d minute%s and %d seconds", mins, minute_s, secs);
             }
         }
 
