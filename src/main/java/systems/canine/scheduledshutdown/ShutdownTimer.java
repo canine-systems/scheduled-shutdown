@@ -27,7 +27,6 @@ public class ShutdownTimer {
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    private final long NANOS_PER_MIN = 60_000_000_000l;
     private final long NANOS_PER_SEC = 1_000_000_000l;
     private final long NUM_SEGMENTS = 10;
 
