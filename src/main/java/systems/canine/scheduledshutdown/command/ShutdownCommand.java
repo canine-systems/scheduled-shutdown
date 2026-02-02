@@ -38,6 +38,7 @@ public class ShutdownCommand {
     private static final int QUICK_DURATION = 100;
 
     private static final String NO_RESTART_FILE = "minecraft.disable";
+    private static final String NEEDS_UPDATE_FILE = "minecraft.needs-update";
 
     // Don't ever construct this directly
     private ShutdownCommand() {
@@ -54,46 +55,52 @@ public class ShutdownCommand {
         dispatcher.register(
             Commands.literal("shutdown")
                 .requires(cs -> cs.hasPermission(OP_LEVEL))
-                .executes(context -> initiateShutdown(context.getSource()))
+                .executes(context -> handleShutdown(context.getSource()))
                 .then(
                     Commands.argument("subcommand", ShutdownCommandArgumentType.newInstance())
                         .executes(context -> handleSubcommand(context.getSource(),
                             context.getArgument("subcommand", ShutdownSubcommand.class)))));
     }
 
-    private static void createNoRestartFile(CommandSourceStack source) {
-        try {
-            source.getServer().getFile(NO_RESTART_FILE).toFile().createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void removeNoRestartFile(CommandSourceStack source) {
-        source.getServer().getFile(NO_RESTART_FILE).toFile().delete();
-    }
-
-    private static int initiateShutdown(CommandSourceStack source) {
-        createNoRestartFile(source);
-        ShutdownTimer.getInstance().restart(DEFAULT_DURATION);
-        source.sendSuccess(() -> Component.literal("Started shutdown timer."), false);
-        return 0;
+    private static int handleShutdown(CommandSourceStack source) {
+        return startShutdown(source, DEFAULT_DURATION, false);
     }
 
     private static int handleSubcommand(CommandSourceStack source, ShutdownSubcommand cmd) {
         switch (cmd) {
         case ShutdownSubcommand.QUICK:
-            ShutdownTimer.getInstance().restart(QUICK_DURATION);
-            createNoRestartFile(source);
-            source.sendSuccess(() -> Component.literal("Started short shutdown timer."), false);
-            break;
+            return startShutdown(source, QUICK_DURATION, false);
         case ShutdownSubcommand.CANCEL:
-            removeNoRestartFile(source);
-            ShutdownTimer.getInstance().cancel();
-            source.sendSuccess(() -> Component.literal("Stopped oustanding shutdown timer, if there is one."), false);
-            break;
+            return cancelShutdown(source);
+        default:
+            return 1;
         }
+    }
 
+    private static int startShutdown(CommandSourceStack source, int duration, boolean needs_update) {
+        createFile(source, NO_RESTART_FILE);
+        ShutdownTimer.getInstance().start(duration);
+        source.sendSuccess(() -> Component.literal("Started shutdown timer."), false);
         return 0;
+    }
+
+    private static int cancelShutdown(CommandSourceStack source) {
+        removeFile(source, NO_RESTART_FILE);
+        removeFile(source, NEEDS_UPDATE_FILE);
+        ShutdownTimer.getInstance().cancel();
+        source.sendSuccess(() -> Component.literal("Stopped oustanding shutdown timer, if there is one."), false);
+        return 0;
+    }
+
+    private static void createFile(CommandSourceStack source, String name) {
+        try {
+            source.getServer().getFile(name).toFile().createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void removeFile(CommandSourceStack source, String name) {
+        source.getServer().getFile(name).toFile().delete();
     }
 }

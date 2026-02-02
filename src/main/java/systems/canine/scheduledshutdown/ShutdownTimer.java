@@ -46,7 +46,7 @@ public class ShutdownTimer {
         return endTime - System.nanoTime();
     }
 
-    public void restart(int seconds) {
+    public void start(int seconds) {
         startTime = System.nanoTime();
         endTime = startTime + (seconds * NANOS_PER_SEC);
         secsPerSegment = (endTime - startTime) / NANOS_PER_SEC / NUM_SEGMENTS;
