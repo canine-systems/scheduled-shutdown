@@ -1,5 +1,6 @@
 package systems.canine.scheduledshutdown.command;
 
+import java.io.IOException;
 import java.util.function.Supplier;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -36,6 +37,8 @@ public class ShutdownCommand {
     private static final int DEFAULT_DURATION = 10 * 60;
     private static final int QUICK_DURATION = 100;
 
+    private static final String NO_RESTART_FILE = "minecraft.disable";
+
     // Don't ever construct this directly
     private ShutdownCommand() {
     }
@@ -58,9 +61,22 @@ public class ShutdownCommand {
                             context.getArgument("subcommand", ShutdownSubcommand.class)))));
     }
 
+    private static void createNoRestartFile(CommandSourceStack source) {
+        try {
+            source.getServer().getFile(NO_RESTART_FILE).toFile().createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void removeNoRestartFile(CommandSourceStack source) {
+        source.getServer().getFile(NO_RESTART_FILE).toFile().delete();
+    }
+
     private static int initiateShutdown(CommandSourceStack source) {
-        source.sendSuccess(() -> Component.literal("Started shutdown timer."), false);
+        createNoRestartFile(source);
         ShutdownTimer.getInstance().restart(DEFAULT_DURATION);
+        source.sendSuccess(() -> Component.literal("Started shutdown timer."), false);
         return 0;
     }
 
@@ -68,9 +84,11 @@ public class ShutdownCommand {
         switch (cmd) {
         case ShutdownSubcommand.QUICK:
             ShutdownTimer.getInstance().restart(QUICK_DURATION);
+            createNoRestartFile(source);
             source.sendSuccess(() -> Component.literal("Started short shutdown timer."), false);
             break;
         case ShutdownSubcommand.CANCEL:
+            removeNoRestartFile(source);
             ShutdownTimer.getInstance().cancel();
             source.sendSuccess(() -> Component.literal("Stopped oustanding shutdown timer, if there is one."), false);
             break;
