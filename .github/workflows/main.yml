@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+      - run: ./gradlew test
+
+  release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+      - id: info
+        run: echo "version=1.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+      - run: ./gradlew -Pversion=${{ steps.info.outputs.version }} build
+      - run: ./gradlew -Pversion=${{ steps.info.outputs.version }} test
+      - run: gh release create --title "Build ${{ steps.info.outputs.version }}" ${{ steps.info.outputs.version }} build/libs/scheduledshutdown-${{ steps.info.outputs.version }}.jar
+      - uses: cloudnode-pro/modrinth-publish@v2
+        with:
+          token: ${{ secrets.MODRINTH_TOKEN }}
+          project: ${{ github.event.repository.custom_properties.modrinth_id }}
+          version: ${{ steps.info.outputs.version }}
+          loaders: neoforge
+          game-versions: 1.21.1
+          files: build/libs/scheduledshutdown-${{ steps.info.outputs.version }}.jar
