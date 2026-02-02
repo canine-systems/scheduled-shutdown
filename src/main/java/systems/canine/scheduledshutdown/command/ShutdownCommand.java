@@ -55,21 +55,30 @@ public class ShutdownCommand {
         dispatcher.register(
             Commands.literal("shutdown")
                 .requires(cs -> cs.hasPermission(OP_LEVEL))
-                .executes(context -> handleShutdown(context.getSource()))
+                .executes(context -> handleShutdown(context.getSource(), false))
                 .then(
                     Commands.argument("subcommand", ShutdownCommandArgumentType.newInstance())
-                        .executes(context -> handleSubcommand(context.getSource(),
+                        .executes(context -> handleSubcommand(context.getSource(), false,
+                            context.getArgument("subcommand", ShutdownSubcommand.class)))));
+
+        dispatcher.register(
+            Commands.literal("update")
+                .requires(cs -> cs.hasPermission(OP_LEVEL))
+                .executes(context -> handleShutdown(context.getSource(), true))
+                .then(
+                    Commands.argument("subcommand", ShutdownCommandArgumentType.newInstance())
+                        .executes(context -> handleSubcommand(context.getSource(), true,
                             context.getArgument("subcommand", ShutdownSubcommand.class)))));
     }
 
-    private static int handleShutdown(CommandSourceStack source) {
-        return startShutdown(source, DEFAULT_DURATION, false);
+    private static int handleShutdown(CommandSourceStack source, boolean needs_update) {
+        return startShutdown(source, DEFAULT_DURATION, needs_update);
     }
 
-    private static int handleSubcommand(CommandSourceStack source, ShutdownSubcommand cmd) {
+    private static int handleSubcommand(CommandSourceStack source, boolean needs_update, ShutdownSubcommand cmd) {
         switch (cmd) {
         case ShutdownSubcommand.QUICK:
-            return startShutdown(source, QUICK_DURATION, false);
+            return startShutdown(source, QUICK_DURATION, needs_update);
         case ShutdownSubcommand.CANCEL:
             return cancelShutdown(source);
         default:
@@ -79,6 +88,9 @@ public class ShutdownCommand {
 
     private static int startShutdown(CommandSourceStack source, int duration, boolean needs_update) {
         createFile(source, NO_RESTART_FILE);
+        if (needs_update) {
+            createFile(source, NEEDS_UPDATE_FILE);
+        }
         ShutdownTimer.getInstance().start(duration);
         source.sendSuccess(() -> Component.literal("Started shutdown timer."), false);
         return 0;
